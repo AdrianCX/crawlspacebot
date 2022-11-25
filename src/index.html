@@ -34,7 +34,10 @@ class JoystickController
 {
     periodic(event)
     {
-        this.ws.send(String(this.value.pin1) + " " + String(this.value.pin2) + " " + String(this.value.pin3) + " " + String(this.value.pin4) + "\n");
+        if (this.value != this.old_value) {
+            this.ws.send(String(this.value.pin1) + " " + String(this.value.pin2) + " " + String(this.value.pin3) + " " + String(this.value.pin4) + "\n");
+        }
+        this.old_value = this.value;
     }
     
 	// stickID: ID of HTML element (representing joystick) that will be dragged
@@ -54,7 +57,8 @@ class JoystickController
 		this.touchId = null;
 		
 		this.active = false;
-		this.value = { pin1: 0, pin2: 0, pin3: 0, pin4: 0 }; 
+		this.value = { pin1: 0, pin2: 0, pin3: 0, pin4: 0 };
+		this.old_value = { pin1: 0, pin2: 0, pin3: 0, pin4: 0 };
 
 		let self = this;
 
@@ -144,9 +148,7 @@ class JoystickController
             var p3 = (right > 0) ? Math.round(((right * 45535) + 20000)) : 0;
             var p4 = (right < 0) ? Math.round(((right * -1 * 45535) + 20000)) : 0;
             
-		    self.value = { pin1: p1, pin2: p2, pin3: p3, pin4: p4 }; 
-            
-            //self.ws.send(String(p1) + " " + String(p2) + " " + String(p3) + " " + String(p4) + "\n");
+		    self.value = { pin1: p1, pin2: p2, pin3: p3, pin4: p4 };
 		  }
 
 		function handleUp(event) 
@@ -165,8 +167,6 @@ class JoystickController
 
 		    self.touchId = null;
 		    self.active = false;
-
-            //self.ws.send("0 0 0 0\n");
 		}
 
 		stick.addEventListener('mousedown', handleDown);
